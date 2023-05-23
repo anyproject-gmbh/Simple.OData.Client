@@ -63,9 +63,10 @@ public abstract class BatchWriterBase : IBatchWriter
 		}
 	}
 
+        
 	protected abstract Task StartChangesetAsync();
 	protected abstract Task EndChangesetAsync();
-	protected abstract Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired);
+        protected abstract Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired, IDictionary<string, string> headers);
 
 	public int LastOperationId { get; private set; }
 
@@ -97,7 +98,7 @@ public abstract class BatchWriterBase : IBatchWriter
 
 	public IDictionary<object, IDictionary<string, object>> BatchEntries { get; private set; }
 
-	public async Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, IDictionary<string, object> entryData, bool resultRequired)
+        public async Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, IDictionary<string, object> entryData, bool resultRequired, IDictionary<string, string> headers)
 	{
 		if (method != RestVerbs.Get && !_pendingChangeSet)
 		{
@@ -118,8 +119,7 @@ public abstract class BatchWriterBase : IBatchWriter
 			MapContentId(entryData, contentId);
 		}
 
-		return await CreateOperationMessageAsync(uri, method, collection, contentId, resultRequired)
-			.ConfigureAwait(false);
+            return await CreateOperationMessageAsync(uri, method, collection, contentId, resultRequired, headers).ConfigureAwait(false);
 	}
 
 	public bool HasOperations { get; protected set; }

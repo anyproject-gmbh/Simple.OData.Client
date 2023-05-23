@@ -31,8 +31,7 @@ public abstract class RequestWriterBase : IRequestWriter
 		IDictionary<string, string>? headers = null)
 	{
 		await WriteEntryContentAsync(
-			RestVerbs.Get, Utils.ExtractCollectionName(commandText), commandText, null, true)
-			.ConfigureAwait(false);
+                RestVerbs.Get, Utils.ExtractCollectionName(commandText), commandText, null, true, headers).ConfigureAwait(false);
 
 		var request = new ODataRequest(RestVerbs.Get, _session, commandText, headers)
 		{
@@ -75,8 +74,7 @@ public abstract class RequestWriterBase : IRequestWriter
 		}
 
 		var entryContent = await WriteEntryContentAsync(
-			RestVerbs.Post, collection, commandText, entryData, resultRequired)
-			.ConfigureAwait(false);
+                RestVerbs.Post, collection, commandText, entryData, resultRequired, headers).ConfigureAwait(false);
 
 		var request = new ODataRequest(RestVerbs.Post, _session, commandText, entryData, entryContent, headers: headers)
 		{
@@ -111,8 +109,7 @@ public abstract class RequestWriterBase : IRequestWriter
 #pragma warning restore CS0618 // Type or member is obsolete
 
 		var entryContent = await WriteEntryContentAsync(
-			updateMethod, collection, entryIdent, entryData, resultRequired)
-			.ConfigureAwait(false);
+                updateMethod, collection, entryIdent, entryData, resultRequired, headers).ConfigureAwait(false);
 
 		var checkOptimisticConcurrency = _session.Metadata.EntityCollectionRequiresOptimisticConcurrencyCheck(collection);
 		var request = new ODataRequest(updateMethod, _session, entryIdent, entryData, entryContent, headers: headers)
@@ -130,8 +127,7 @@ public abstract class RequestWriterBase : IRequestWriter
 		IDictionary<string, string>? headers = null)
 	{
 		await WriteEntryContentAsync(
-			RestVerbs.Delete, collection, entryIdent, null, false)
-			.ConfigureAwait(false);
+                RestVerbs.Delete, collection, entryIdent, null, false, headers).ConfigureAwait(false);
 
 		var request = new ODataRequest(RestVerbs.Delete, _session, entryIdent, headers)
 		{
@@ -174,8 +170,7 @@ public abstract class RequestWriterBase : IRequestWriter
 		var associationName = _session.Metadata.GetNavigationPropertyExactName(collection, linkName);
 		var commandText = FormatLinkPath(entryIdent, associationName, linkIdent);
 
-		await WriteEntryContentAsync(RestVerbs.Delete, collection, commandText, null, false)
-			.ConfigureAwait(false);
+            await WriteEntryContentAsync(RestVerbs.Delete, collection, commandText, null, false, headers).ConfigureAwait(false);
 
 		var request = new ODataRequest(RestVerbs.Delete, _session, commandText, headers)
 		{
@@ -236,38 +231,13 @@ public abstract class RequestWriterBase : IRequestWriter
 		return request;
 	}
 
-	protected abstract Task<Stream> WriteEntryContentAsync(
-		string method,
-		string collection,
-		string commandText,
-		IDictionary<string, object>? entryData,
-		bool resultRequired);
-
-	protected abstract Task<Stream> WriteLinkContentAsync(
-		string method,
-		string commandText,
-		string linkIdent);
-
-	protected abstract Task<Stream> WriteFunctionContentAsync(
-		string method,
-		string commandText);
-
-	protected abstract Task<Stream> WriteActionContentAsync(
-		string method,
-		string commandText,
-		string actionName,
-		string boundTypeName,
-		IDictionary<string, object> parameters);
-
-	protected abstract Task<Stream> WriteStreamContentAsync(
-		Stream stream,
-		bool writeAsText);
-
-	protected abstract string FormatLinkPath(
-		string entryIdent,
-		string navigationPropertyName,
-		string? linkIdent = null);
-
+        protected abstract Task<Stream> WriteEntryContentAsync(string method, string collection, string commandText,
+            IDictionary<string, object> entryData, bool resultRequired, IDictionary<string, string> headers);
+        protected abstract Task<Stream> WriteLinkContentAsync(string method, string commandText, string linkIdent);
+        protected abstract Task<Stream> WriteFunctionContentAsync(string method, string commandText);
+        protected abstract Task<Stream> WriteActionContentAsync(string method, string commandText, string actionName, string boundTypeName, IDictionary<string, object> parameters);
+        protected abstract Task<Stream> WriteStreamContentAsync(Stream stream, bool writeAsText);
+        protected abstract string FormatLinkPath(string entryIdent, string navigationPropertyName, string linkIdent = null);
 	protected abstract void AssignHeaders(ODataRequest request);
 
 	protected string? GetContentId(ReferenceLink referenceLink)

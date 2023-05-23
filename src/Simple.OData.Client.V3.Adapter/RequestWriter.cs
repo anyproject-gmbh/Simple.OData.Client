@@ -22,7 +22,9 @@ public class RequestWriter : RequestWriterBase
 		_model = model;
 	}
 
-	protected async override Task<Stream> WriteEntryContentAsync(string method, string collection, string commandText, IDictionary<string, object> entryData, bool resultRequired)
+        protected override async Task<Stream> WriteEntryContentAsync(string method, string collection,
+            string commandText, IDictionary<string, object> entryData, bool resultRequired,
+            IDictionary<string, string> dictionary)
 	{
 		var message = IsBatch
 			? await CreateBatchOperationMessageAsync(method, collection, entryData, commandText, resultRequired).ConfigureAwait(false)
@@ -240,7 +242,7 @@ public class RequestWriter : RequestWriterBase
 	{
 		var message = (await _deferredBatchWriter.Value.CreateOperationMessageAsync(
 			Utils.CreateAbsoluteUri(_session.Settings.BaseUri.AbsoluteUri, commandText),
-			method, collection, entryData, resultRequired).ConfigureAwait(false)) as IODataRequestMessageAsync;
+                method, collection, entryData, resultRequired, null).ConfigureAwait(false)) as IODataRequestMessageAsync;
 
 		return message;
 	}

@@ -54,7 +54,7 @@ public class BatchWriter : BatchWriterBase
 		return _batchWriter.WriteEndChangesetAsync();
 	}
 
-	protected async override Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired)
+        protected override async Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired, IDictionary<string, string> headers)
 	{
 		if (_batchWriter == null)
 		{

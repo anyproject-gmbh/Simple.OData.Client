@@ -21,9 +21,9 @@ public class AdapterTests : TestBase
 			this.session = session;
 		}
 
-		protected async override Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired)
+            protected override async Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired, IDictionary<string, string> headers)
 		{
-			var result = await base.CreateOperationMessageAsync(AppendToken(uri), method, collection, contentId, resultRequired).ConfigureAwait(false);
+                var result = await base.CreateOperationMessageAsync(AppendToken(uri), method, collection, contentId, resultRequired, null);
 			if (result is IODataRequestMessage request)
 			{
 				session.Trace("{0} batch request id {1}: {2}", request.Method, contentId, request.Url.AbsoluteUri);

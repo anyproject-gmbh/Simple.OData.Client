@@ -54,18 +54,18 @@ public class BatchWriter : BatchWriterBase
 		return _batchWriter.WriteEndChangesetAsync();
 	}
 
-	protected async override Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired)
+        protected override async Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, string contentId, bool resultRequired, IDictionary<string, string> headers)
 	{
 		if (_batchWriter == null)
 		{
 			await StartBatchAsync().ConfigureAwait(false);
 		}
 
-		return await CreateBatchOperationMessageAsync(uri, method, collection, contentId, resultRequired).ConfigureAwait(false);
+            return await CreateBatchOperationMessageAsync(uri, method, collection, contentId, resultRequired, headers).ConfigureAwait(false);
 	}
 
 	private async Task<ODataBatchOperationRequestMessage> CreateBatchOperationMessageAsync(
-		Uri uri, string method, string collection, string contentId, bool resultRequired)
+            Uri uri, string method, string collection, string contentId, bool resultRequired, IDictionary<string, string> headers)
 	{
 		var message = await _batchWriter.CreateOperationRequestMessageAsync(method, uri, contentId, (Microsoft.OData.BatchPayloadUriOption)_session.Settings.BatchPayloadUriOption).ConfigureAwait(false);
 
@@ -84,6 +84,14 @@ public class BatchWriter : BatchWriterBase
 		{
 			message.SetHeader(HttpLiteral.IfMatch, EntityTagHeaderValue.Any.Tag);
 		}
+
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                {
+                    message.SetHeader(header.Key, header.Value);
+                }
+            }
 
 		return message;
 	}

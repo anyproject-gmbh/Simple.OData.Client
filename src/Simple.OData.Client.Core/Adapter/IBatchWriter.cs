@@ -6,19 +6,8 @@ namespace Simple.OData.Client;
 
 public interface IBatchWriter
 {
-	Task<ODataRequest> CreateBatchRequestAsync(
-		IODataClient client,
-		IList<Func<IODataClient, Task>> actions,
-		IList<int> responseIndexes,
-		IDictionary<string, string>? headers = null);
-
-	Task<object> CreateOperationMessageAsync(
-		Uri uri,
-		string method,
-		string? collection,
-		IDictionary<string, object>? entryData,
-		bool resultRequired);
-
+        Task<ODataRequest> CreateBatchRequestAsync(IODataClient client, IList<Func<IODataClient, Task>> actions, IList<int> responseIndexes, IDictionary<string, string> headers = null);
+        Task<object> CreateOperationMessageAsync(Uri uri, string method, string collection, IDictionary<string, object> entryData, bool resultRequired, IDictionary<string, string> headers);
 	bool HasOperations { get; }
 
 	int LastOperationId { get; }
