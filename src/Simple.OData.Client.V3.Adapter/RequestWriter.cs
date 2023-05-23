@@ -22,8 +22,7 @@ public class RequestWriter : RequestWriterBase
 		_model = model;
 	}
 
-        protected override async Task<Stream> WriteEntryContentAsync(string method, string collection,
-            string commandText, IDictionary<string, object> entryData, bool resultRequired,
+    protected async override Task<Stream> WriteEntryContentAsync(string method, string collection, string commandText, IDictionary<string, object> entryData, bool resultRequired,
             IDictionary<string, string> dictionary)
 	{
 		var message = IsBatch
